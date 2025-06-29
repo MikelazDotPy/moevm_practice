@@ -1,0 +1,242 @@
+\usepackage[utf8]{inputenc}
+
+\usepackage[T2A,T1]{fontenc}
+
+\usepackage[english,russian]{babel}
+
+\usepackage{textcomp}
+
+\usepackage{url}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={blue!80!black}
+}
+
+\usepackage{graphicx}
+
+\usepackage{float}
+
+\usepackage{booktabs}
+
+\usepackage[shortlabels]{enumitem}
+
+\usepackage{emptypage}
+
+\usepackage[usenames,dvipsnames]{xcolor}
+
+\usepackage{amsmath, amsfonts, mathtools, amsthm, amssymb}
+
+\usepackage{mathrsfs}
+
+\usepackage{cancel}
+
+\usepackage{bm}
+
+\usepackage{geometry}
+\geometry{top=72pt}
+\geometry{bottom=72pt}
+\geometry{left=72pt}
+\geometry{right=72pt}
+
+
+\newcommand\N{\ensuremath{\mathbb{N}}}
+\newcommand\R{\ensuremath{\mathbb{R}}}
+\newcommand\Z{\ensuremath{\mathbb{Z}}}
+\renewcommand\O{\ensuremath{\emptyset}}
+\newcommand\Q{\ensuremath{\mathbb{Q}}}
+\renewcommand\C{\ensuremath{\mathbb{C}}}
+
+\DeclareMathOperator{\sgn}{sgn}
+
+\newcommand{\tabitem}{%
+  \usebeamertemplate{itemize item}\hspace*{\labelsep}}
+
+\usepackage{systeme}
+
+\usepackage{indentfirst}
+%\setlength{\parindent}{1.5cm}
+
+\usepackage{xcolor}       % Пакет для работы с цветами
+\usepackage{listings}     % Пакет для вставки кода
+\lstset{
+  language=Python,                      % Язык по умолчанию
+  backgroundcolor=\color{black!5},      % Легкий серый фон
+  basicstyle=\ttfamily,           % Шрифт (моноширинный, мелкий)
+  keywordstyle=\color{blue},            % Стиль для ключевых слов (if, for, etc.)
+  stringstyle=\color{red!70!black},     % Стиль для строк ("hello")
+  commentstyle=\color{green!70!black},  % Стиль для комментариев (# comment)
+  numberstyle=\color{black},        % Стиль для номеров строк
+  breaklines=true,                      % Автоматически переносить длинные строки
+  showstringspaces=false,               % Не показывать специальные символы для пробелов в строках
+  numbers=left,    
+  xleftmargin=15pt                     % Нумерация строк слева
+}
+
+\def\letus{%
+    \mathord{\setbox0=\hbox{$\exists$}%
+             \hbox{\kern 0.125\wd0%
+                   \vbox to \ht0{%
+                      \hrule width 0.75\wd0%
+                      \vfill%
+                      \hrule width 0.75\wd0}%
+                   \vrule height \ht0%
+                   \kern 0.125\wd0}%
+           }%
+}
+
+\usepackage{tikz}
+\usepackage{tikz-cd}
+
+\usetikzlibrary{intersections, angles, quotes, calc, positioning}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.13}
+
+\usepackage{thmtools}
+\usepackage[framemethod=TikZ]{mdframed}
+\mdfsetup{skipabove=1em,skipbelow=0em, innertopmargin=5pt, innerbottommargin=6pt}
+
+\theoremstyle{definition}
+
+\makeatletter
+
+\@ifclasswith{report}{nocolor}{
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont, mdframed={ nobreak } ]{thmgreenbox}
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont, mdframed={ nobreak } ]{thmredbox}
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont]{thmbluebox}
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont]{thmblueline}
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont, numbered=no, mdframed={ rightline=false, topline=false, bottomline=false, }, qed=\qedsymbol ]{thmproofbox}
+    \declaretheoremstyle[headfont=\bfseries, bodyfont=\normalfont, numbered=no, mdframed={ nobreak, rightline=false, topline=false, bottomline=false } ]{thmexplanationbox}
+    \AtEndEnvironment{eg}{\null\hfill$\diamond$}%
+}{
+    \declaretheoremstyle[
+        headfont=\bfseries\color{ForestGreen!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=ForestGreen, backgroundcolor=ForestGreen!5,
+        }
+    ]{thmgreenbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue, backgroundcolor=NavyBlue!5,
+        }
+    ]{thmbluebox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue
+        }
+    ]{thmblueline}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\color{RawSienna!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=RawSienna, backgroundcolor=RawSienna!5,
+        }
+    ]{thmredbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\color{RawSienna!70!black}, bodyfont=\normalfont,
+        numbered=no,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=RawSienna, backgroundcolor=RawSienna!1,
+        },
+        qed=\qedsymbol
+    ]{thmproofbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        numbered=no,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue, backgroundcolor=NavyBlue!1,
+        },
+    ]{thmexplanationbox}
+}
+
+\declaretheorem[style=thmgreenbox, numbered=no, name=Определение]{definition}
+\declaretheorem[style=thmbluebox, numbered=no, name=Пример]{eg}
+\declaretheorem[style=thmredbox, numbered=no, name=Задача]{ex}
+\declaretheorem[style=thmredbox, numbered=no, name=Утверждение]{prop}
+\declaretheorem[style=thmredbox, numbered=no, name=Теорема]{theorem}
+\declaretheorem[style=thmredbox, numbered=no, name=Лемма]{lemma}
+\declaretheorem[style=thmredbox, numbered=no, name=Следствие]{corollary}
+\declaretheorem[style=thmredbox, numbered=no, name=Алгоритм]{algo}
+
+\@ifclasswith{report}{nocolor}{
+    \declaretheorem[style=thmproofbox, name=Доказательство]{replacementproof}
+    \declaretheorem[style=thmexplanationbox, name=Доказательство]{explanation}
+    \declaretheorem[style=thmproofbox, name=Решение]{solution}
+}{
+    \declaretheorem[style=thmproofbox, name=Доказательство]{replacementproof}
+    \renewenvironment{proof}[1][\proofname]{\vspace{-10pt}\begin{replacementproof}}{\end{replacementproof}}
+
+    \declaretheorem[style=thmexplanationbox, name=Доказательство]{tmpexplanation}
+    \newenvironment{explanation}[1][]{\vspace{-10pt}\begin{tmpexplanation}}{\end{tmpexplanation}}
+}
+
+\makeatother
+
+\declaretheorem[style=thmblueline, numbered=no, name=Замечание]{remark}
+\declaretheorem[style=thmblueline, numbered=no, name=Примечание]{note}
+
+\usepackage{etoolbox}
+\AtEndEnvironment{vb}{\null\hfill$\diamond$}%
+\AtEndEnvironment{intermezzo}{\null\hfill$\diamond$}%
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancyhead[RO,LE]{Реализация генетических алгоритмов с использованием GUI}
+\fancyhead[RE,LO]{}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[C]{\leftmark}
+
+\makeatother
+
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+\newcommand{\incfig}[1]{%
+    \def\svgwidth{\columnwidth}
+    \import{./figures/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\newcommand{\nchapter}[2]{%
+    \setcounter{chapter}{#1}%
+    \addtocounter{chapter}{-1}%
+    \chapter{#2}
+}
+
+\newcommand{\nsection}[3]{%
+    \setcounter{chapter}{#1}%
+    \setcounter{section}{#2}%
+    \addtocounter{section}{-1}%
+    \section{#3}
+}%
+
+
+
