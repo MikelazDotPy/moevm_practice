@@ -1,9 +1,11 @@
-from dataclasses import dataclass, InitVar
+from copy import deepcopy
 from functools import lru_cache
+import io
 import random
 
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
+
 import numpy as np
 
 
@@ -49,12 +51,13 @@ class Darwin:
         self.m: int = max(2, int(m))
         self.D: int = max(1, int(D))
         self.E: int = max(1, int(E))
+        self.e = 0
         self.eps: float = max(0, eps)
 
     @lru_cache(None)
     def f(self, x: float, h: float) -> int:
         return int(
-            (2*(self.R**2 - x**2)**0.5)/h
+            (2*((self.R**2 - x**2)**0.5))/h
         )
     
     @lru_cache(None)
@@ -99,8 +102,8 @@ class Darwin:
         n = int(self.N**0.5)
         h_vars = (self.R*min_h, 2**0.5 * self.R + self.R*min_h)
         r_vars = (self.R*min_h, self.R)
-        H = map(float, np.linspace(*h_vars, n))
-        R = map(float, np.linspace(*r_vars, n))
+        H = tuple(map(float, np.linspace(*h_vars, n)))
+        R = tuple(map(float, np.linspace(*r_vars, n)))
         generation: list[Creature] = []
         for h in H:
             for r in R:
@@ -111,52 +114,74 @@ class Darwin:
         return generation
     
     def get_next_generation(self, generation: list[Creature]) -> list[Creature]:
-        generation = generation[:]
+        generation = deepcopy(generation)
         parents = [i for i in range(len(generation)) if random.random() < self.P_c]
         for i in range(len(parents) - 1):
             for j in range(i + 1, len(parents)):
                 generation.extend(self.crossing(generation[parents[i]], generation[parents[j]]))
-        # for i in range(len(parents)):
-        #     generation.extend(self.crossing(generation[parents[i]], generation[parents[random.randint(0, len(parents) - 1)]]))
+
+        generation.sort(key=lambda x: self.M(x.h, x.r), reverse=True)
+        new = deepcopy(generation[:self.n])
         for i in range(len(generation)):
             if random.random() < self.P_m:
-                generation[i].h = self.mutate(generation[i].h)
+                generation[i].h = min(2**0.5*self.R, self.mutate(generation[i].h))
             if random.random() < self.P_m:
                 generation[i].r = self.mutate(generation[i].r)
         generation.sort(key=lambda x: self.M(x.h, x.r), reverse=True)
-        new = generation[:self.n]
+
         for _ in range(self.N - self.n):
-            idxs = [random.randint(0, len(generation) - 1) for __ in range(self.m)]
-            new.append(generation[max(idxs, key=lambda i: self.M(generation[i].h, generation[i].r))])
+            idxs = random.choices(range(len(generation)), k=self.m)
+            winner = max(idxs, key=lambda i: self.M(generation[i].h, generation[i].r))
+            new.append(deepcopy(generation[winner]))
         new.sort(key=lambda x: self.M(x.h, x.r), reverse=True)
         return new
 
     def solve(self) -> float:
         generation = self.get_start_generation()
+        last = self.M(generation[0].h, generation[0].r)
         for _ in range(self.D - 1):
             generation = self.get_next_generation(generation)
+            new = self.M(generation[0].h, generation[0].r)
+            if abs(last - new) < self.eps:
+                self.e += 1
+            else:
+                self.e = 0
+            last = new
+            if self.e == self.E:
+                return new
         return generation[0]
     
     def solve_generator(self):
         generation = self.get_start_generation()
-        for _ in range(self.D - 1):
+        last = self.M(generation[0].h, generation[0].r)
+        for i in range(self.D - 1):
             yield generation
             generation = self.get_next_generation(generation)
+            new = self.M(generation[0].h, generation[0].r)
+            if abs(last - new) < self.eps:
+                self.e += 1
+            else:
+                self.e = 0
+            last = new
+            if self.e == self.E:
+                self.D = i + 1
+                yield generation
+                return
         yield generation
     
-    def draw_squares_in_circle(self, creature: Creature):
+    @lru_cache(None)
+    def draw_squares_in_circle(self, h, r, gen_i=1) -> bytes:
         fig, ax = plt.subplots(figsize=(8, 8))
-        ro = self.get_ro(creature.r, creature.h)
-        print(ro, creature.r)
+        ro = self.get_ro(r, h)
         
         k = 0
         for i in range(len(ro) - 1):
             x0, x1 = ro[i], ro[i + 1]
             y = -(self.R**2 - max(x0**2, x1**2))**0.5
-            for j in range(min(self.g(x0, x1, creature.h), self.K - k)):
+            for j in range(min(self.g(x0, x1, h), self.K - k)):
                 ax.add_patch(
                     patches.Rectangle(
-                    (x0, y + creature.h*j), creature.h, creature.h,
+                    (x0, y + h*j), h, h,
                     linewidth=1, edgecolor='red', facecolor='none'
                 )
                 )
@@ -170,9 +195,38 @@ class Darwin:
         ax.set_ylim(-self.R - 1, self.R + 1)
         ax.set_aspect('equal')
         plt.grid(True)
-        plt.title(f'Сторона квадрата h = {creature.h}\n Начало разбиения r = {creature.r}')
+        plt.title(f'Сторона квадрата h = {h}\n Начало разбиения r = {r}\n M(h, r) = {self.M(h, r)}\n Номер поколения i = {gen_i}')
 
-        plt.show()
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', bbox_inches='tight', dpi=100)
+        plt.close(fig)
+        buf.seek(0)
+        return buf.getvalue()
+
+    def draw_adaptation(self, generations: list[list[Creature]]) -> bytes:
+        generations_x = range(1, len(generations) + 1)
+        marks = [
+            tuple(map(lambda x: self.M(x.h, x.r), gen))
+            for gen in generations
+        ]
+        best = tuple(max(x) for x in marks)
+        avg = tuple(sum(x)/len(x) for x in marks)
+        plt.figure(figsize=(7, 5.45))
+        plt.plot(generations_x, best, label="Лучший результат в поколении", marker='o')
+        plt.plot(generations_x, avg, label="Средний результат в поколении", marker='s')
+
+        plt.xlabel("Количество поколений")
+        plt.ylabel("Приспособленность")
+        plt.title("Эволюция приспособленности")
+        plt.grid(True)
+        plt.legend()
+
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+        plt.close()
+
+        buffer.seek(0)
+        return buffer.getvalue()
     
 
 if __name__ == "__main__":
@@ -180,5 +234,4 @@ if __name__ == "__main__":
         R=5**0.5, K=12, P_m=0.4, sigma=1, P_c=0.6, alpha=0.5, c=2, N=50, n=0.3, m=4, D=10, E=10, eps=1
     )
     d = darwin.solve()
-    print(d)
     darwin.draw_squares_in_circle(d)
