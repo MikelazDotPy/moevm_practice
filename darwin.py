@@ -195,7 +195,7 @@ class Darwin:
         ax.set_ylim(-self.R - 1, self.R + 1)
         ax.set_aspect('equal')
         plt.grid(True)
-        plt.title(f'Сторона квадрата h = {h}\n Начало разбиения r = {r}\n M(h, r) = {self.M(h, r)}\n Номер поколения i = {gen_i}')
+        plt.title(f'Сторона квадрата h = {h}\n Начало разбиения r = {r}\n Целевая функция M(h, r) = {self.M(h, r)}\n Номер поколения i = {gen_i}')
 
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight', dpi=100)
